@@ -1,0 +1,69 @@
+[user]
+	name = Baharak Saberidokht
+	email = baharak.saberidokht@ge.com
+[core]
+	editor = emacs -nw
+	excludesfile = ~/.gitexclude
+[color]
+	ui = auto
+[diff]
+	tool = ediff
+[difftool "ediff"]
+	cmd = emacs --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+[difftool "ediffclient"]
+	cmd = ediff $LOCAL $REMOTE -c
+[push]
+	default = tracking
+[alias]
+	a = add "[^#]*[^~]"
+	au = add -u :/
+	br = branch
+	ci = commit
+	cio = "!f() { git commit -m \"Commit some old files: $@\" --date \"$( \
+	    git dcns | grep '^A' | cut -f2 | \
+	       sed \"s|.*|'$(git root)'/&|\" | \
+	       xargs stat -c '%y' | sort -r | head -n 1 \
+	  )\"; }; f"
+	cd = "!d=\"$(date -d \"$1\")\" && shift && \
+	  git diff-index --cached --quiet HEAD --ignore-submodules -- && \
+	  GIT_COMMITTER_DATE=\"$d\" git commit --amend -C HEAD --date \"$d\"" \
+	  || echo >&2 "error: date change failed: index not clean!"
+	cda = "!git cd \"$(git log -n 1 --pretty=format:%ai)\""
+	clone-sd = "!f() { local d=$1; shift && git clone --separate-git-dir /mnt/sd/RO/download/repo/$d.git "$@" "${GIT_PREFIX:-}/$d"; }; f"
+	cm = commit --amend -C HEAD
+	co = checkout
+	cv = cherry -v
+	dc = diff --cached
+	dcns = diff --cached --name-status
+	df = diff
+	dfns = diff --name-status
+	dw = "!cd ${GIT_PREFIX:-.} && GIT_PAGER='' git diff --word-diff"
+	find = log --pretty=\"format:%Cgreen%H %Cblue%s\" --name-status --grep
+	h = help
+	p = "!f() { for arg in "$@"; do echo "$arg"; done | sed 's|[ab]/||' | xargs echo; }; f"
+	rba = rebase --abort
+	rbc = rebase --continue
+	rbi = "!git rebase -i $(git rev-parse @{u})"
+	rbih = "!n=\"$1\" && shift && git rebase -i HEAD~$n"
+	# git reauthor $START..$END
+	reauthor = !sh -c 'eval `git log --reverse --topo-order --pretty=format:\"git cherry-pick %H &&  git commit --amend -C %H --author=\\\"%aN <%aE>\\\" && \" $0 ` "echo success" '
+	rh = reset HEAD --
+	sk = stash --keep-index
+	st = status
+	ss = status -s
+	l = log
+	lpf = log --pretty=fuller
+	lo = log --oneline
+	lg = log --graph --decorate --pretty='format:%C(yellow)%h %Cblue%ad%Creset %s %Cgreen%ae%Creset' --date=short
+	ls = "!git log --stat $(git rev-parse @{u})..HEAD"
+	lsfo = "!f() { git ls-files -o --exclude-standard \"$@\" | sed \"s|.*|$(git root)/&|\" | tr \"\\n\" \"\\0\" | xargs -0 ls -ltr; }; f"
+	ls-commit = diff-tree --no-commit-id --name-status -r
+	root = rev-parse --show-toplevel
+	sub-fetch = "!f() { git submodule foreach 'git fetch origin --tags; git checkout master; git pull'; }; f"
+	sub-up = submodule update --init --recursive
+	# Danger zone !!!
+	delete-remote-branches-grep-x = "!f() { remote="$1"; shift 1 && git branch -r | grep -v -- '->' | grep \"^ *$remote/\" | sed \"s| *$remote/||\" | grep -x \"$@\" | xargs -I{} -n 1 git push \"$remote\" :{}  ; }; f"
+
+# Decorative options
+[grep]
+	lineNumber = true
