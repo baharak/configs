@@ -1,6 +1,6 @@
 [user]
 	name = Baharak Saberidokht
-	email = baharak.saberidokht@ge.com
+	email = baharak.saberidokhtcs@gmail.com
 [core]
 	editor = emacs -nw
 	excludesfile = ~/.gitexclude
